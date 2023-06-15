@@ -5,7 +5,6 @@ import (
 	"GeeORM/log"
 	"GeeORM/session"
 	"database/sql"
-	_ "github.com/mattn/go-sqlite3"
 )
 
 type Engine struct {

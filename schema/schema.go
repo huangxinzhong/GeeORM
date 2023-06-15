@@ -18,8 +18,8 @@ type Schema struct {
 	Model      interface{}       //
 	Name       string            // 表名
 	Fields     []*Field          // 字段类型
-	FieldNames []string          // 字段类型
-	fieldMap   map[string]*Field // 字段和字段类型的映射
+	FieldNames []string          // 字段名
+	fieldMap   map[string]*Field // 字段名和字段类型的映射
 }
 
 // GetField returns field by name
@@ -32,6 +32,7 @@ func (schema *Schema) RecordValues(dest interface{}) []interface{} {
 	destValue := reflect.Indirect(reflect.ValueOf(dest))
 	var fieldValues []interface{}
 	for _, field := range schema.Fields {
+
 		fieldValues = append(fieldValues, destValue.FieldByName(field.Name).Interface())
 	}
 
