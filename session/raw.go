@@ -14,6 +14,7 @@ import (
 type Session struct {
 	db       *sql.DB // 数据库连接
 	dialect  dialect.Dialect
+	tx       *sql.Tx         // 事务
 	refTable *schema.Schema  // 数据库中表的集合
 	clause   clause.Clause   // sql 命令子句
 	sql      strings.Builder // sql 命令
@@ -35,8 +36,14 @@ func (s *Session) Clear() {
 	s.clause = clause.Clause{}
 }
 
-// DB returns *sql.DB
-func (s *Session) DB() *sql.DB {
+var _ CommonDB = (*sql.DB)(nil)
+var _ CommonDB = (*sql.Tx)(nil)
+
+// DB returns tx if a tx begins. otherwise return *sql.DB
+func (s *Session) DB() CommonDB {
+	if s.tx != nil {
+		return s.tx
+	}
 	return s.db
 }
 
@@ -74,4 +81,11 @@ func (s *Session) Raw(sql string, values ...interface{}) *Session {
 	s.sql.WriteString(" ")
 	s.sqlVars = append(s.sqlVars, values...)
 	return s
+}
+
+// CommonDB is a minimal function set of db
+type CommonDB interface {
+	Query(query string, args ...interface{}) (*sql.Rows, error)
+	QueryRow(query string, args ...interface{}) *sql.Row
+	Exec(query string, args ...interface{}) (sql.Result, error)
 }
