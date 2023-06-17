@@ -39,6 +39,7 @@ func (schema *Schema) RecordValues(dest interface{}) []interface{} {
 	return fieldValues
 }
 
+// ITableName 自定义表名接口
 type ITableName interface {
 	TableName() string
 }
@@ -47,7 +48,7 @@ type ITableName interface {
 func Parse(dest interface{}, d dialect.Dialect) *Schema {
 	modelType := reflect.Indirect(reflect.ValueOf(dest)).Type()
 
-	// TODO: 理解这一步操作是什么作用
+	// 自定义表名接口，如果实现，则使用自动以表名，为实现则使用结构体名作为表名
 	var tableName string
 	t, ok := dest.(ITableName)
 	if !ok {
