@@ -15,7 +15,7 @@ type Field struct {
 
 // Schema represents a table of database
 type Schema struct {
-	Model      interface{}       //
+	Model      interface{}       // 元数据，存储结构体
 	Name       string            // 表名
 	Fields     []*Field          // 字段类型
 	FieldNames []string          // 字段名
@@ -46,6 +46,8 @@ type ITableName interface {
 // Parse a struct to a Schema instance
 func Parse(dest interface{}, d dialect.Dialect) *Schema {
 	modelType := reflect.Indirect(reflect.ValueOf(dest)).Type()
+
+	// TODO: 理解这一步操作是什么作用
 	var tableName string
 	t, ok := dest.(ITableName)
 	if !ok {
@@ -62,6 +64,8 @@ func Parse(dest interface{}, d dialect.Dialect) *Schema {
 
 	for i := 0; i < modelType.NumField(); i++ {
 		p := modelType.Field(i)
+		// p.Anonymous 是否嵌入字段
+		// ast.IsExported(p.Name) 是否大写字母开头
 		if !p.Anonymous && ast.IsExported(p.Name) {
 			field := &Field{
 				Name: p.Name,
